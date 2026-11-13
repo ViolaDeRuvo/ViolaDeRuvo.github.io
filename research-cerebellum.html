@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cerebellar connectivity · Viola De Ruvo</title>
+  <meta name="description" content="Viola De Ruvo — M.Sc. student in Artificial Intelligence at Bocconi University working on computational and theoretical neuroscience.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">Viola De Ruvo</a>
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="research.html" class="active" aria-current="page">Research</a>
+      <a href="publications.html">Publications</a>
+      <a href="cv.pdf" target="_blank" rel="noopener">CV</a>
+    </nav>
+    <aside class="side-contact" aria-label="Contact">
+      <h2>Contact</h2>
+      <p>
+        Department of Computing Sciences<br>
+        Bocconi University<br>
+        Via Sarfatti 25<br>
+        20136 Milan, Italy
+      </p>
+      <p>
+        <a href="mailto:viola.deruvo@studbocconi.it">viola.deruvo<wbr>@studbocconi.it</a><br>
+        <a href="https://www.linkedin.com/in/viola-de-ruvo-aabaa22bb/">LinkedIn</a>
+      </p>
+    </aside>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section class="page">
+    <p class="back"><a href="research.html">← All research</a></p>
+    <article class="detail">
+      <h2>Random and structured connectivity in the cerebellar circuit</h2>
+      <p class="meta">Department of Computing Sciences, Bocconi University · with Ł. Kuśmierz and N. Brunel · 2025–present ·
+        M.Sc. thesis · manuscript in preparation</p>
+
+      <div class="tldr">
+        <p class="kicker">In short</p>
+        <p>We fitted a model of the cerebellar cortex to recordings from four cell types in monkeys tracking a moving
+          target. Random synaptic weights explain much of the activity of the circuit's intermediate cells, but not
+          the Purkinje cells, the circuit's output. Their direction selectivity and timing require individually
+          organized synapses.</p>
+      </div>
+
+      <h4>The question</h4>
+      <p>
+        The cerebellum is one of the best-mapped circuits in the brain. Mossy fibers bring signals into the cerebellar
+        cortex, where they are expanded across a huge population of granule cells and read out by Purkinje cells, the
+        only output of the cortex. Golgi cells and molecular layer interneurons add inhibition along the way. Classic
+        theories (Marr, Albus) propose that this expansion is essentially random, and that the useful structure is learned
+        at the granule cell to Purkinje cell synapses, guided by climbing fiber signals.
+      </p>
+      <p>
+        During smooth-pursuit eye movements, the different cell types respond very differently: mossy fibers track eye
+        position, Purkinje cells respond transiently and prefer particular directions, and Golgi cells hardly respond at all.
+        We asked <strong>which of these response properties can emerge from the circuit's wiring with random synaptic
+        strengths, and which require specific organization of individual synapses.</strong>
+      </p>
+
+      <h4>The data</h4>
+      <p>
+        We analyzed extracellular recordings from the floccular complex of three rhesus macaques, collected by
+        D. J. Herzfeld and S. G. Lisberger at Duke University, with cell types identified by recent classification methods.
+        In each trial the monkey fixated a central target, then tracked it as it moved at 20 deg/s in one of four directions
+        for 650 ms, and finally held fixation at the endpoint for 350 ms. For every neuron, I regressed firing rate on eye
+        position and velocity to measure what kinematic information it carries and which direction it prefers.
+      </p>
+      <div class="table-wrap">
+      <table>
+        <caption>Recorded populations and how they behave during pursuit</caption>
+        <thead><tr><th>Population</th><th class="num">Cells</th><th class="num">Kinematic fit (mean R²)</th><th>Response during pursuit</th></tr></thead>
+        <tbody>
+          <tr><td>Mossy fibers</td><td class="num">62</td><td class="num">0.66</td><td>Sustained, position-like; tuned to all four directions equally</td></tr>
+          <tr><td>Golgi cells</td><td class="num">191</td><td class="num">0.18</td><td>Barely modulated; no clear direction preference</td></tr>
+          <tr><td>Molecular layer interneurons</td><td class="num">23</td><td class="num">0.36</td><td>Fast rise, elevated throughout pursuit; weak tuning</td></tr>
+          <tr><td>Purkinje cells</td><td class="num">216</td><td class="num">0.51</td><td>Fast transient, velocity-like; strongly prefer ipsiversive and downward motion</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <figure class="figure">
+        <img src="assets/fig1.png" alt="Recorded population response properties" onerror="this.closest('figure').remove()">
+        <figcaption><strong>Figure 1.</strong> Cerebellar circuit, recordings and population response properties: example eye kinematics, preferred-direction distributions and population-averaged modulation for each cell type.</figcaption>
+      </figure>
+
+      <h4>The model</h4>
+      <p>
+        I built a feedforward rate model of the cerebellar cortex driven by the recorded eye kinematics. As input, I
+        generated a synthetic mossy fiber population from a generative model fitted to the recorded mossy fibers. It reproduces the recorded tuning statistics, including their dependencies and the preference for the four
+        cardinal directions. The downstream network was then trained jointly to match the recorded Golgi cells,
+        interneurons and Purkinje cells, using a loss that compares tuning distributions, preferred directions and
+        population time courses.
+      </p>
+      <figure class="diagram">
+        <svg viewBox="0 0 640 270" role="img" aria-label="Feedforward model of the cerebellar cortex">
+          <defs>
+            <marker id="exc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" class="m-exc"/></marker>
+            <marker id="inh" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+              <rect x="3" y="0" width="3" height="10" class="m-inh"/></marker>
+          </defs>
+          <!-- edges -->
+          <line class="e" x1="100" y1="160" x2="182" y2="122" marker-end="url(#exc)"/>
+          <line class="e" x1="100" y1="175" x2="182" y2="214" marker-end="url(#exc)"/>
+          <line class="i" x1="225" y1="200" x2="225" y2="140" marker-end="url(#inh)"/>
+          <line class="e" x1="268" y1="110" x2="512" y2="110" marker-end="url(#exc)"/>
+          <line class="e" x1="262" y1="128" x2="382" y2="190" marker-end="url(#exc)"/>
+          <line class="i" x1="458" y1="186" x2="522" y2="138" marker-end="url(#inh)"/>
+          <line class="cf" x1="560" y1="214" x2="560" y2="140" marker-end="url(#exc)"/>
+          <!-- nodes -->
+          <g class="n"><circle cx="60" cy="168" r="38"/><text x="60" y="164">MF</text><text class="s" x="60" y="182">input</text></g>
+          <g class="n"><circle cx="225" cy="110" r="38"/><text x="225" y="106">GC</text><text class="s" x="225" y="124">granule</text></g>
+          <g class="n inhib"><circle cx="225" cy="230" r="32"/><text x="225" y="228">GoC</text><text class="s" x="225" y="244">Golgi</text></g>
+          <g class="n inhib"><circle cx="420" cy="205" r="34"/><text x="420" y="202">MLI</text><text class="s" x="420" y="218">interneuron</text></g>
+          <g class="n out"><circle cx="560" cy="110" r="38"/><text x="560" y="106">PC</text><text class="s" x="560" y="124">Purkinje</text></g>
+          <g class="n cfn"><rect x="525" y="216" width="70" height="34" rx="6"/><text x="560" y="238">CF</text></g>
+          <text class="lbl" x="390" y="100">parallel fibers</text>
+          <text class="lbl" x="605" y="180">teaching</text>
+          <text class="lbl" x="605" y="194">signal</text>
+        </svg>
+        <figcaption>The modelled circuit. Mossy fibers (MF) drive granule cells (GC) and Golgi cells (GoC); granule cells
+          excite molecular layer interneurons (MLI) and Purkinje cells (PC), the only output of the cerebellar cortex.
+          Arrows are excitatory, bars inhibitory. The climbing fiber (CF, dashed) is used only in the learning-rule model.
+          Per Purkinje cell, the model has 100 mossy fibers, 15 Golgi cells, 1,000 granule cells and 20 interneurons.</figcaption>
+      </figure>
+      <p>The key comparison is between two ways of setting the synapses:</p>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Random-weight regime</th><th>Optimized-weight regime</th></tr></thead>
+        <tbody>
+          <tr><td>Individual synapses</td><td>Drawn at random and fixed</td><td>Each one trained independently</td></tr>
+          <tr><td>What is fitted</td><td>Only the overall strength of each projection and the bias distributions</td><td>Every synaptic weight and every unit's bias</td></tr>
+          <tr><td>Trainable parameters</td><td>15</td><td>≈ 19 million</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <figure class="figure">
+        <img src="assets/fig2.png" alt="Model architecture and synthetic mossy fibers" onerror="this.closest('figure').remove()">
+        <figcaption><strong>Figure 2.</strong> Architecture of the feedforward model, kinematic input, and comparison of synthetic and recorded mossy fibers.</figcaption>
+      </figure>
+
+      <h4>Results</h4>
+      <p>
+        To judge each model fairly, its loss against the data was compared with the loss between two halves of the
+        recorded data itself. A model that falls close to this data-vs-data baseline matches the recordings within their
+        natural variability. <em>Lower is better.</em>
+      </p>
+      <figure class="loss-chart" aria-label="Model loss compared with empirical baseline">
+        <div class="loss-group">
+          <div class="loss-name">Golgi cells</div>
+          <div class="loss-bars">
+            <div class="lb base"><span>Data vs. data</span><div><i style="width:49.2%"></i></div><b>1.72 ± 0.28</b></div>
+            <div class="lb rand"><span>Random</span><div><i style="width:57.1%"></i></div><b>2.00 ± 0.24</b></div>
+            <div class="lb opt"><span>Optimized</span><div><i style="width:44.5%"></i></div><b>1.56 ± 0.29</b></div>
+          </div>
+        </div>
+        <div class="loss-group">
+          <div class="loss-name">Interneurons (MLI)</div>
+          <div class="loss-bars">
+            <div class="lb base"><span>Data vs. data</span><div><i style="width:99.1%"></i></div><b>3.47 ± 0.80</b></div>
+            <div class="lb rand"><span>Random</span><div><i style="width:90.7%"></i></div><b>3.17 ± 0.74</b></div>
+            <div class="lb opt"><span>Optimized</span><div><i style="width:94.4%"></i></div><b>3.30 ± 1.29</b></div>
+          </div>
+        </div>
+        <div class="loss-group">
+          <div class="loss-name">Purkinje cells</div>
+          <div class="loss-bars">
+            <div class="lb base"><span>Data vs. data</span><div><i style="width:20.0%"></i></div><b>0.70 ± 0.15</b></div>
+            <div class="lb rand"><span>Random</span><div><i style="width:45.3%"></i></div><b>1.59 ± 0.14 *</b></div>
+            <div class="lb opt"><span>Optimized</span><div><i style="width:12.2%"></i></div><b>0.43 ± 0.08</b></div>
+          </div>
+        </div>
+        <figcaption>Fitting loss (mean ± s.d. across random subsamples). * Random model's interval lies entirely above the
+          data-vs-data baseline.</figcaption>
+      </figure>
+
+      <div class="cards3">
+        <div class="mini">
+          <p class="kicker">Golgi cells</p>
+          <p><strong>Random wiring explains the lack of tuning, but not the weak response.</strong> Each Golgi cell
+            sums about 40 mossy fibers, so random mixing spreads preferred directions around the circle, as in the data.
+            But summing excitatory inputs makes them inherit the mossy fibers' positive response. Silencing it with random
+            weights flattens their tuning too much; individually set weights resolve this.</p>
+        </div>
+        <div class="mini">
+          <p class="kicker">Interneurons</p>
+          <p><strong>Random wiring is largely enough.</strong> The random model matches the recorded statistics within
+            the data's own variability and reproduces the weak directional tuning. It misses only the rapid rise after
+            motion onset, which optimization recovers.</p>
+        </div>
+        <div class="mini highlight">
+          <p class="kicker">Purkinje cells</p>
+          <p><strong>Random wiring fails.</strong> It produces a nearly flat response across all four directions and
+            misses the strong bias toward ipsiversive and downward velocity. Optimizing individual weights recovers
+            both the directional bias and the direction-dependent time course.</p>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="assets/fig3.png" alt="Random versus optimized model results" onerror="this.closest('figure').remove()">
+        <figcaption><strong>Figure 3.</strong> Preferred directions and population modulation of Golgi cells, interneurons and Purkinje cells under the random and optimized models, compared with recordings.</figcaption>
+      </figure>
+
+      <h4>Can a learning rule supply the missing structure?</h4>
+      <p>
+        In the recordings, climbing fiber activity is roughly opposite to Purkinje cell activity across directions.
+        Building on this, I replaced the optimized granule cell to Purkinje cell weights with a biologically motivated rule
+        with only two parameters: a synapse weakens when granule cell activity coincides with increased climbing fiber
+        firing, and strengthens when climbing fiber firing decreases. This rule reproduced the Purkinje cells'
+        <strong>directional organization</strong>, including the asymmetric velocity tuning, but not their
+        <strong>fast response at motion onset</strong>. Something beyond the climbing fiber signal is needed to explain the
+        full time course.
+      </p>
+      <figure class="figure">
+        <img src="assets/fig4.png" alt="Climbing-fiber learning rule results" onerror="this.closest('figure').remove()">
+        <figcaption><strong>Figure 4.</strong> Climbing fiber activity captures Purkinje cell directional tuning but not temporal modulation.</figcaption>
+      </figure>
+
+      <h4>Why it matters</h4>
+      <p>
+        The circuit's architecture and the precise organization of its synapses contribute differently at different
+        stages. Intermediate populations can be explained largely by the wiring itself, while the Purkinje cell output needs
+        specifically organized synapses. The final stages of the circuit actively shape the output rather than relaying
+        directional structure already present in the mossy fiber input. The results come from a simplified feedforward
+        model, without recurrent connections or additional cell types, and granule cell activity is inferred rather than
+        recorded.
+      </p>
+
+      <h4>Status</h4>
+      <p>
+        A manuscript with Łukasz Kuśmierz and Nicolas Brunel is in preparation. I presented this work at the
+        NeuroML Journal Club at Bocconi in February 2026 (<em>Evaluating Random Connectivity in the Cerebellar Cortex</em>).
+        The model is implemented in PyTorch.
+      </p>
+    </article>
+  </section>
+
+</main>
+
+<footer class="wrap footer">
+  © <span id="year">2026</span> Viola De Ruvo · Last updated November 2026
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
